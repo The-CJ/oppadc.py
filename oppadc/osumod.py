@@ -3,9 +3,10 @@ class GeneralOsuMod(object):
 		represents a mod in osu
 		value should be a one bit moved value (8,32,128,4096)
 	"""
-	def __init__(self, value:int, name:str=None):
+	def __init__(self, value:int, name:str=None, build:bool=False):
 		self.value:int = value
 		self.name:str = name or "[N/A]"
+		self.build:bool = build
 
 	def __repr__(self) -> str:
 		return f"<{self.__class__.__name__} name='{self.name}' ({self.value})>"
@@ -99,6 +100,23 @@ class OsuModIndex(object):
 
 		return res
 
+	def getStringFromValue(self, value:int) -> str:
+		"""
+			returns the user known string representation for a mod value
+
+			16648 -> HDHTPF
+		"""
+
+		if not value: return self.get("NM")
+
+		res:str = ""
+		for mod in self.index:
+			Mod:GeneralOsuMod = self.index[mod]
+			if value & Mod.value and not Mod.build:
+				res += mod
+
+		return res
+
 	def buildMod(self, value:int=None, from_mods:list=[], name:str=None) -> GeneralOsuMod:
 		"""
 			Builds a new mod,
@@ -111,12 +129,12 @@ class OsuModIndex(object):
 				So you can later Calculate a map and just give this object
 		"""
 		if value != None:
-			return GeneralOsuMod(value, name)
+			return GeneralOsuMod(value, name, build=True)
 
 		i:int = 0
 		for m in from_mods:
 			i |= self.get(m).value
 
-		return GeneralOsuMod(i, name)
+		return GeneralOsuMod(i, name, build=True)
 
 OsuModIndex:OsuModIndex = OsuModIndex()

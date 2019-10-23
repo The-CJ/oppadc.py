@@ -1,4 +1,4 @@
-# oppc.py
+# oppadc.py
 osu! performance point and difficulty calculator
 
 This is a rewrite of [oppai-ng](https://github.com/Francesco149/oppai-ng).

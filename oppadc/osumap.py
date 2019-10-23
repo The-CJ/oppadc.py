@@ -33,3 +33,9 @@ class OsuMap(object):
 		self.amount_spinner:int = 0
 		self.timingpoints:list = []
 		self.hitobjects:list = []
+
+	def __repr__(self) -> str:
+		return f"<{self.__class__.__name__} title='{self.title}' set={self.mapset_id} map={self.map_id} >"
+
+	def __str__(self) -> str:
+		return self.__repr__()

@@ -60,8 +60,44 @@ class OsuModIndex(object):
 		self.index["FreeMods"] = self.buildMod(from_mods=self.mods_free, name="Allowed in multiplier")
 		self.index["ScoreMods"] = self.buildMod(from_mods=self.mods_score, name="Increase Score")
 
-	def get(self, name:str) -> GeneralOsuMod:
-		return self.index.get(name)
+	def get(self, name:str, alt=None) -> GeneralOsuMod:
+		return self.index.get(name, alt)
+
+	def getValueFromString(self, mod_str:str) -> int:
+		"""
+			returns the value of the string representation of mod groups
+
+			HDHRFL -> 1048 (10000011000)
+
+			does only work for 2 char mods
+			else use getValueFromList
+		"""
+		res:int = 0
+		while mod_str:
+			search:str = mod_str[:2]
+
+			FoundMod:GeneralOsuMod = self.get(search)
+			if FoundMod:
+				res |= FoundMod.value
+
+			mod_str = mod_str[2:]
+
+		return res
+
+	def getValueFromList(self, mod_list:list) -> int:
+		"""
+			returns the value of all found mods
+
+			['EZ','DT','KEY4'] -> 32834 (1000000001000100)
+		"""
+		res:int = 0
+		for search in mod_list:
+
+			FoundMod:GeneralOsuMod = self.get(search)
+			if FoundMod:
+				res |= FoundMod.value
+
+		return res
 
 	def buildMod(self, value:int=None, from_mods:list=[], name:str=None) -> GeneralOsuMod:
 		"""

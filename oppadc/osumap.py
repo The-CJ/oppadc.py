@@ -133,5 +133,13 @@ class OsuMap(object):
 			self.creator = prop[1]
 		elif prop[0] == "Version":
 			self.version = prop[1]
+		elif prop[0] == "Source":
+			self.source = prop[1]
+		elif prop[0] == "BeatmapID":
+			self.map_id = int(prop[1])
+		elif prop[0] == "BeatmapSetID":
+			self.mapset_id = int(prop[1])
+		elif prop[0] == "Tags":
+			self.tags = [t.strip() for t in prop[1].split(',')]
 
 	# calculations

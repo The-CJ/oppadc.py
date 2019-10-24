@@ -50,7 +50,42 @@ class OsuMap(object):
 		return f"<{self.__class__.__name__} title='{self.title}' set={self.mapset_id} map={self.map_id} >"
 
 	def __str__(self) -> str:
-		return self.__repr__()
+		print_info:str = []
+
+		# artist
+		if self.artist != self.artist_unicode:
+			print_info.append( f"Artist: {self.artist_unicode} [{self.artist}]" )
+		else:
+			print_info.append( f"Artist: {self.artist}" )
+
+		# title
+		if self.title != self.title_unicode:
+			print_info.append( f"Title: {self.title_unicode} [{self.title}]" )
+		else:
+			print_info.append( f"Title: {self.title}" )
+
+		# creator
+		print_info.append( f"Creator: {self.creator}" )
+
+		# version
+		print_info.append( f"Version: {self.version}" )
+
+		# difficulty
+		print_info.append( f"Difficulty - HP:{self.hp} CS:{self.cs} OD:{self.od} AR:{self.ar}" )
+
+		# slider
+		print_info.append( f"Slider - speed:{self.slider_multiplier} tickrate:{self.slider_tick_rate}" )
+
+		# objects
+		print_info.append( f"Objects - Circle:x{self.amount_circle} Splider:x{self.amount_slider} Spinner:x{self.amount_spinner}" )
+
+		# hit objects list
+		print_info.append( f"Hit Object List:" )
+
+		# timing point list
+		print_info.append( f"Timing Point List:" )
+
+		return "\n".join(print_info)
 
 	# parse utils
 	def lineGenerator(self) -> Generator[str, None, None]:

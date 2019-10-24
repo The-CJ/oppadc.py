@@ -52,6 +52,7 @@ class OsuMap(object):
 	def __str__(self) -> str:
 		return self.__repr__()
 
+	# parse utils
 	def lineGenerator(self) -> Generator[str, None, None]:
 		if not self.raw_str and not self.file_path:
 			raise AttributeError("missing raw content or path to file")
@@ -71,11 +72,66 @@ class OsuMap(object):
 		else:
 			raise StopIteration()
 
-	def parse(self) -> bool:
+	def parseProp(self, line) -> tuple:
+		"""
+			get prop from line, also strip white spaces from value
+		"""
+		pair:list = line.split(':', 1)
+		if len(pair) == 1:
+			raise SyntaxError(f"property must me pair of ':'-separated values, can't get property from line: {line}")
+
+		return (pair[0], pair[1].strip())
+
+	def parse(self) -> None:
 
 		Source:generator = self.lineGenerator()
 
+		section:str = ""
+
 		for line in Source:
-			print(line)
+			# ignore all types of commants
+			if line[0] in [" ", "_"]: continue
+			if line[0:2] == "//": continue
+
+			line = line.strip()
+			if not line: continue
+
+			# change current section
+			if line.startswith("["):
+				section = line[1:-1]
+				continue
+
+			try:
+				if section == "General":
+					self.parseGeneral(line)
+				elif section == "Metadata":
+					self.parseMetadata(line)
+
+			except (ValueError, SyntaxError) as e:
+				raise e
 
 		self.done = True
+
+	def parseGeneral(self, line:str) -> None:
+		prop:tuple = self.parseProp(line)
+
+		if prop[0] == "Mode":
+			self.mode = int(prop[1])
+
+	def parseMetadata(self, line:str) -> None:
+		prop:tuple = self.parseProp(line)
+
+		if prop[0] == "Title":
+			self.title = prop[1]
+		elif prop[0] == "TitleUnicode":
+			self.title_unicode = prop[1]
+		elif prop[0] == "Artist":
+			self.artist = prop[1]
+		elif prop[0] == "ArtistUnicode":
+			self.artist_unicode = prop[1]
+		elif prop[0] == "Creator":
+			self.creator = prop[1]
+		elif prop[0] == "Version":
+			self.version = prop[1]
+
+	# calculations

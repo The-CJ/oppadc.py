@@ -167,6 +167,10 @@ class OsuMap(object):
 			except (ValueError, SyntaxError) as e:
 				raise e
 
+		# i did not know that this is a thing
+		if not self.ar:
+			self.ar = self.od
+
 		self.done = True
 
 	def parseGeneral(self, line:str) -> None:

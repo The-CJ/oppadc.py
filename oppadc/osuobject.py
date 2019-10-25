@@ -18,6 +18,12 @@ class OsuHitObject(object):
 		self.delta_time:float = 0.0
 		self.delta_distance:float = 0.0
 
+	def __str__(self):
+		return self.__repr__()
+
+	def __repr__(self):
+		return f"<{self.__class__.__name__} {self.starttime}ms normpos={self.NormPos} strains={self.strains} is_single={str(self.is_single)}>"
+
 class OsuHitObjectCircle(OsuHitObject):
 	"""
 		representats a single circle object

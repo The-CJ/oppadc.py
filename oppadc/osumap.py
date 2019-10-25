@@ -1,5 +1,7 @@
 from typing import Generator, Iterator
 
+from .osutimingpoint import OsuTimingPoint
+
 class OsuMap(object):
 	"""
 		contains all meta data about a map
@@ -143,6 +145,8 @@ class OsuMap(object):
 					self.parseMetadata(line)
 				elif section == "Difficulty":
 					self.parseDifficulty(line)
+				elif section == "TimingPoints":
+					self.parseTimingPoint(line)
 
 			except (ValueError, SyntaxError) as e:
 				raise e
@@ -194,5 +198,22 @@ class OsuMap(object):
 			self.slider_multiplier = float(prop[1])
 		elif prop[0] == "SliderTickRate":
 			self.slider_tick_rate = float(prop[1])
+
+	def parseTimingPoint(self, line:str) -> None:
+		# each timing points can contains up to 8 ',' separated values
+		s:list = line.split(',')
+
+		if len(s) > 8:
+			print("timing point with trailing values")
+
+		elif len(s) < 2:
+			raise SyntaxError("timing point must have at least two fields")
+
+		TPoint:OsuTimingPoint = OsuTimingPoint( starttime=s[0], ms_per_beat=s[1] )
+		if len(s) >= 7:
+			TPoint.change = bool(s[6] != "0")
+
+		self.timingpoints.append(TPoint)
+
 
 	# calculations

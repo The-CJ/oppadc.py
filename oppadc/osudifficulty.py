@@ -4,6 +4,9 @@ if TYPE_CHECKING:
 
 from .osumod import GeneralOsuMod, OsuModIndex
 
+MODS_SPEED_FASTER:int = OsuModIndex.getValueFromString("NCDT")
+MODS_SPEED_SLOWER:int = OsuModIndex.getValueFromString("HT")
+
 class OsuDifficulty(object):
 	"""
 		Contains the difficulty and allowes to apply mods.
@@ -48,3 +51,9 @@ class OsuDifficulty(object):
 
 		# no mods will change stuff we care about
 		if not mods_value & MODS_MAP_CHANGING: return
+
+		if mods_value & MODS_SPEED_FASTER:
+			self.speed_multiplier = 1.5
+
+		elif mods_value & MODS_SPEED_SLOWER:
+			self.speed_multiplier = 0.75

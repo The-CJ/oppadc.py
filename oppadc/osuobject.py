@@ -10,6 +10,7 @@ class OsuHitObject(object):
 		it should be used as a parent class, since there are values every object has
 	"""
 	def __init__(self, starttime:float or str):
+		self.osu_obj:int = 0
 		self.starttime:float = float(starttime)
 		self.NormPos:Vector = Vector()
 		self.angle:float = 0.0
@@ -31,6 +32,7 @@ class OsuHitObjectCircle(OsuHitObject):
 	def __init__(self, starttime:float or str, Pos:Vector=Vector()):
 		super().__init__(starttime)
 
+		self.osu_obj = OSU_OBJ_CIRCLE
 		self.Pos:Vector = Pos
 
 class OsuHitObjectSlider(OsuHitObject):
@@ -40,6 +42,7 @@ class OsuHitObjectSlider(OsuHitObject):
 	def __init__(self, starttime:float or str, Pos:Vector=Vector(), distance:float or str=0.0, repetitions:int or str=0):
 		super().__init__(starttime)
 
+		self.osu_obj = OSU_OBJ_SLIDER
 		self.Pos:Vector = Pos
 		self.distance:float = float(distance)
 		self.repetitions:int = int(repetitions)
@@ -50,4 +53,6 @@ class OsuHitObjectSpinner(OsuHitObject):
 	"""
 	def __init__(self, starttime:float, endtime:float or str=0.0):
 		super().__init__(starttime)
+
+		self.osu_obj = OSU_OBJ_SPINNER
 		self.endtime:float = float(endtime)

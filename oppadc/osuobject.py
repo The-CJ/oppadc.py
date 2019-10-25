@@ -43,3 +43,11 @@ class OsuHitObjectSlider(OsuHitObject):
 		self.Pos:Vector = Pos
 		self.distance:float = float(distance)
 		self.repetitions:int = int(repetitions)
+
+class OsuHitObjectSpinner(OsuHitObject):
+	"""
+		a spinner, yeahhhh...
+	"""
+	def __init__(self, starttime:float, endtime:float or str=0.0):
+		super().__init__(starttime)
+		self.endtime:float = float(endtime)

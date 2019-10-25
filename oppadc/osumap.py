@@ -3,7 +3,7 @@ from typing import Generator, Iterator
 from .osutimingpoint import OsuTimingPoint
 from .osuobject import (
 	OSU_OBJ_CIRCLE, OSU_OBJ_SLIDER, OSU_OBJ_SPINNER,
-	OsuHitObjectCircle, OsuHitObjectSlider
+	OsuHitObjectCircle, OsuHitObjectSlider, OsuHitObjectSpinner
 )
 
 MODE_STD:int = 0
@@ -247,7 +247,6 @@ class OsuMap(object):
 
 	def parseHitObjectSTD(self, line:str) -> None:
 		# each hitobject can contains up to 11 ',' separated values
-		# x, y, starttime, objtype, ?, ?, ?, ?, ?, ?, ?
 		s:list = line.split(',')
 
 		if len(s) > 11:
@@ -263,6 +262,7 @@ class OsuMap(object):
 			raise SyntaxError("invalid hitobject type")
 
 		# circle
+		# x, y, starttime, objtype, ?, ?, ?, ?, ?, ?, ?
 		if objtype & OSU_OBJ_CIRCLE:
 			Circle:OsuHitObjectCircle = OsuHitObjectCircle(starttime)
 			Circle.Pos.x = float(s[0])
@@ -270,10 +270,14 @@ class OsuMap(object):
 			self.amount_circle += 1
 			self.hitobjects.append(Circle)
 
+		# ?, ?, starttime, objtype, ?, endtime, ?, ?, ?, ?, ?
 		elif objtype & OSU_OBJ_SPINNER:
-			# TODO: add spinner obj
+			Spinner:OsuHitObjectSpinner = OsuHitObjectSpinner(starttime)
+			Spinner.endtime = float(s[5])
 			self.amount_spinner += 1
+			self.hitobjects.append(Spinner)
 
+		# x, y, starttime, objtype, ?, repetitions, distance, ?, ?, ?, ?
 		elif objtype & OSU_OBJ_SLIDER:
 			if len(s) < 7:
 				raise SyntaxError("slider must have at least 7 fields")

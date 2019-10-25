@@ -1,6 +1,7 @@
 from typing import Generator, Iterator
 
 import math
+from .osucalculator import OsuCalculator
 from .osutimingpoint import OsuTimingPoint
 from .osuobject import (
 	OSU_OBJ_CIRCLE, OSU_OBJ_SLIDER, OSU_OBJ_SPINNER,
@@ -12,9 +13,13 @@ MODE_STD:int = 0
 class OsuMap(object):
 	"""
 		contains all meta data about a map
-		also holds the calculated results for pp and diff
+		holds the calculated results for pp in self.Calc
+		and difficulty with applied mods n self.Diff (self.ar, cs, etc... contains the unmodified version)
 	"""
 	def __init__(self, file_path:str=None, raw_str:str=None, auto_parse:bool=True):
+		self.__Calc:OsuCalculator = None
+		self.__Diff = None
+
 		# internal
 		self.file_path:str = file_path
 		self.raw_str:str = raw_str
@@ -360,3 +365,12 @@ class OsuMap(object):
 			res += max(0, ticks)
 
 		return res
+
+	def getDiff(self) -> None:
+		return
+
+	def getCalc(self) -> OsuCalculator:
+		if self.__Calc: return self.__Calc
+
+		self.__Calc = OsuCalculator(self)
+		return self.__Calc

@@ -74,7 +74,7 @@ class OsuMap(object):
 		print_info.append( f"Difficulty - HP:{self.hp} CS:{self.cs} OD:{self.od} AR:{self.ar}" )
 
 		# slider
-		print_info.append( f"Slider - speed:{self.slider_multiplier} tickrate:{self.slider_tick_rate}" )
+		print_info.append( f"Slider - mult:x{self.slider_multiplier} tickrate:{self.slider_tick_rate}" )
 
 		# objects
 		print_info.append( f"Objects - Circle:x{self.amount_circle} Splider:x{self.amount_slider} Spinner:x{self.amount_spinner}" )
@@ -141,6 +141,8 @@ class OsuMap(object):
 					self.parseGeneral(line)
 				elif section == "Metadata":
 					self.parseMetadata(line)
+				elif section == "Difficulty":
+					self.parseDifficulty(line)
 
 			except (ValueError, SyntaxError) as e:
 				raise e
@@ -176,5 +178,21 @@ class OsuMap(object):
 			self.mapset_id = int(prop[1])
 		elif prop[0] == "Tags":
 			self.tags = [t.strip() for t in prop[1].split(',')]
+
+	def parseDifficulty(self, line:str) -> None:
+		prop:tuple = self.parseProp(line)
+
+		if prop[0] == "CircleSize":
+			self.cs = float(prop[1])
+		elif prop[0] == "OverallDifficulty":
+			self.od = float(prop[1])
+		elif prop[0] == "ApproachRate":
+			self.ar = float(prop[1])
+		elif prop[0] == "HPDrainRate":
+			self.hp = float(prop[1])
+		elif prop[0] == "SliderMultiplier":
+			self.slider_multiplier = float(prop[1])
+		elif prop[0] == "SliderTickRate":
+			self.slider_tick_rate = float(prop[1])
 
 	# calculations

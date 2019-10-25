@@ -18,12 +18,21 @@ class OsuHitObject(object):
 		self.delta_time:float = 0.0
 		self.delta_distance:float = 0.0
 
+class OsuHitObjectCircle(OsuHitObject):
+	"""
+		representats a single circle object
+	"""
+	def __init__(self, starttime:float or str, Pos:Vector=Vector()):
+		super().__init__(starttime)
+
+		self.Pos:Vector = Pos
+
 class OsuHitObjectSlider(OsuHitObject):
 	"""
 		representats a single slider object
 	"""
-	def __init__(self, Pos:Vector=Vector(), distance:float=0.0, repetitions:int=0):
-		super().__init__()
+	def __init__(self, starttime:float or str, Pos:Vector=Vector(), distance:float=0.0, repetitions:int=0):
+		super().__init__(starttime)
 
 		self.Pos:Vector = Pos
 		self.distance:float = distance

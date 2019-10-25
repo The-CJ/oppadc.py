@@ -1,6 +1,10 @@
 from typing import Generator, Iterator
 
 from .osutimingpoint import OsuTimingPoint
+from .osuobject import (
+	OSU_OBJ_CIRCLE, OSU_OBJ_SLIDER, OSU_OBJ_SPINNER,
+	OsuHitObjectCircle, OsuHitObjectSlider
+)
 
 MODE_STD:int = 0
 
@@ -213,6 +217,7 @@ class OsuMap(object):
 
 	# timing
 	def parseTimingPoint(self, line:str) -> None:
+		# starttime, mspb, ?, ?, ?, ?, change, ?
 		# each timing points can contains up to 8 ',' separated values
 		s:list = line.split(',')
 
@@ -238,12 +243,27 @@ class OsuMap(object):
 
 	def parseHitObjectSTD(self, line:str) -> None:
 		# each hitobject can contains up to 11 ',' separated values
+		# x, y, starttime, objtype, ?, ?, ?, ?, ?, ?, ?
 		s:list = line.split(',')
 
 		if len(s) > 11:
-			print("hiz object with trailing values")
+			print("hit object with trailing values")
 
 		elif len(s) < 5:
 			raise SyntaxError("hitobject must have at least 5 fields")
+
+		starttime:float = float(s[2])
+		objtype:int = int(s[3])
+
+		if not (0 <= objtype <= 255):
+			raise SyntaxError("invalid hitobject type")
+
+		# circle
+		if objtype & OSU_OBJ_CIRCLE:
+			Circle:OsuHitObjectCircle = OsuHitObjectCircle(starttime)
+			Circle.Pos.x = float(s[0])
+			Circle.Pos.y = float(s[1])
+			self.amount_circle += 1
+			self.hitobjects.append(Circle)
 
 	# calculations

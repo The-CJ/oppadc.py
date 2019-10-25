@@ -15,4 +15,4 @@ class OsuTimingPoint(object):
 		return self.__repr__()
 
 	def __repr__(self):
-		return f"<{self.__class__.__name__} {self.starttime}ms msb={round(self.ms_per_beat, 1)}{' [change]' if self.change else ''}>"
+		return f"<{self.__class__.__name__} {self.starttime}ms mspb={round(self.ms_per_beat, 1)}{' [change]' if self.change else ''}>"

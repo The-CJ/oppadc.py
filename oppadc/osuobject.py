@@ -31,9 +31,9 @@ class OsuHitObjectSlider(OsuHitObject):
 	"""
 		representats a single slider object
 	"""
-	def __init__(self, starttime:float or str, Pos:Vector=Vector(), distance:float=0.0, repetitions:int=0):
+	def __init__(self, starttime:float or str, Pos:Vector=Vector(), distance:float or str=0.0, repetitions:int or str=0):
 		super().__init__(starttime)
 
 		self.Pos:Vector = Pos
-		self.distance:float = distance
-		self.repetitions:int = repetitions
+		self.distance:float = float(distance)
+		self.repetitions:int = int(repetitions)

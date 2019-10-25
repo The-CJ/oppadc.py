@@ -266,4 +266,19 @@ class OsuMap(object):
 			self.amount_circle += 1
 			self.hitobjects.append(Circle)
 
+		elif objtype & OSU_OBJ_SPINNER:
+			# TODO: add spinner obj
+			self.amount_spinner += 1
+
+		elif objtype & OSU_OBJ_SLIDER:
+			if len(s) < 7:
+				raise SyntaxError("slider must have at least 7 fields")
+
+			Slider:OsuHitObjectSlider = OsuHitObjectSlider(starttime, repetitions=s[6], distance=s[7])
+			Slider.Pos.x = float(s[0])
+			Slider.Pos.y = float(s[1])
+
+			self.amount_slider += 1
+			self.hitobjects.append(Slider)
+
 	# calculations

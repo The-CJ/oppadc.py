@@ -83,9 +83,18 @@ class OsuMap(object):
 
 		# hit objects list
 		print_info.append( f"Hit Object List:" )
+		if self.hitobjects:
+			for Ob in self.hitobjects: print_info.append( (" " * 4) + str(Ob) )
+		else:
+			print_info.append( (" "*4) + "None" )
+
 
 		# timing point list
 		print_info.append( f"Timing Point List:" )
+		if self.timingpoints:
+			for Ob in self.timingpoints: print_info.append( (" " * 4) + str(Ob) )
+		else:
+			print_info.append( (" "*4) + "None" )
 
 		return "\n".join(print_info)
 

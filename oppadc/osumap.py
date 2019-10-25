@@ -88,7 +88,6 @@ class OsuMap(object):
 		else:
 			print_info.append( (" "*4) + "None" )
 
-
 		# timing point list
 		print_info.append( f"Timing Point List:" )
 		if self.timingpoints:

@@ -10,3 +10,9 @@ class OsuTimingPoint(object):
 		self.starttime:float = float(starttime)
 		self.ms_per_beat:float = float(ms_per_beat)
 		self.change:bool = bool(change)
+
+	def __str__(self):
+		return self.__repr__()
+
+	def __repr__(self):
+		return f"<{self.__class__.__name__} {self.starttime}ms msb={round(self.ms_per_beat, 1)}{' [change]' if self.change else ''}>"

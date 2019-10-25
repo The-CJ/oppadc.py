@@ -1,7 +1,9 @@
 from typing import Generator, Iterator
 
 import math
+from .osumod import GeneralOsuMod
 from .osucalculator import OsuCalculator
+from .osudifficulty import OsuDifficulty
 from .osutimingpoint import OsuTimingPoint
 from .osuobject import (
 	OSU_OBJ_CIRCLE, OSU_OBJ_SLIDER, OSU_OBJ_SPINNER,
@@ -18,7 +20,7 @@ class OsuMap(object):
 	"""
 	def __init__(self, file_path:str=None, raw_str:str=None, auto_parse:bool=True):
 		self.__Calc:OsuCalculator = None
-		self.__Diff = None
+		self.__Diff:OsuDifficulty = None
 
 		# internal
 		self.file_path:str = file_path
@@ -366,8 +368,12 @@ class OsuMap(object):
 
 		return res
 
-	def getDiff(self) -> None:
-		return
+	def getDiff(self, Mods:GeneralOsuMod or list or str=None, recalculate:bool=False) -> OsuDifficulty:
+		if self.__Diff and not recalculate: return self.__Diff
+
+		self.__Diff = OsuDifficulty(self)
+		self.__Diff.applyMods(Mods)
+		return self.__Diff
 
 	def getCalc(self) -> OsuCalculator:
 		if self.__Calc: return self.__Calc

@@ -157,7 +157,13 @@ class OsuMap(object):
 				continue
 
 			try:
-				if section == "General":
+				if not section:
+					format_str:str = "file format v"
+					findatpos:int = line.find(format_str)
+					if findatpos > 0:
+						self.format_version = int( line[findatpos+len(format_str):] )
+
+				elif section == "General":
 					self.parseGeneral(line)
 				elif section == "Metadata":
 					self.parseMetadata(line)
@@ -336,13 +342,21 @@ class OsuMap(object):
 				if self.format_version < 8:
 					px_per_beat /= slider_speed_multiplier
 
+			# get the number of beat
 			beats:float = (Obj.distance * Obj.repetitions) / px_per_beat
+			# get the slider ticks, this is what actully increases the combo
 			ticks:int = math.ceil( (beats - 0.1) / Obj.repetitions * self.slider_tick_rate )
 
+			# remove endpoint from ticks
 			ticks -= 1
+			# times the repetition
 			ticks *= Obj.repetitions
+			# add one more repetition and readd endpoint
 			ticks += Obj.repetitions + 1
 
+			# we do this because...
+			# well i really don't know, can there be negative values?
+			# @Francesco149 probly has a reason for this
 			res += max(0, ticks)
 
 		return res

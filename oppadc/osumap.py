@@ -1,5 +1,6 @@
 from typing import Generator, Iterator
 
+import math
 from .osutimingpoint import OsuTimingPoint
 from .osuobject import (
 	OSU_OBJ_CIRCLE, OSU_OBJ_SLIDER, OSU_OBJ_SPINNER,
@@ -86,6 +87,9 @@ class OsuMap(object):
 
 		# objects
 		print_info.append( f"Objects - Circle:x{self.amount_circle} Splider:x{self.amount_slider} Spinner:x{self.amount_spinner}" )
+
+		# combo
+		print_info.append( f"Max combo: x{self.maxCombo()}" )
 
 		# hit objects list
 		print_info.append( f"Hit Object List:" )
@@ -290,3 +294,55 @@ class OsuMap(object):
 			self.hitobjects.append(Slider)
 
 	# calculations
+	def maxCombo(self) -> int:
+		res:int = 0
+
+		timing_index:int = -1
+		CurrentTimingPoint:OsuTimingPoint = None
+		NextTimingPoint:OsuTimingPoint = OsuTimingPoint(starttime=0)
+
+		px_per_beat:float = 1.0
+
+		# everything that not a slider is worth +1
+		# sliders are another number duh
+		for Obj in self.hitobjects:
+			if not Obj.osu_obj & OSU_OBJ_SLIDER:
+				res += 1
+				continue
+
+			# slider combo calc, for that we need data from the object itself,
+			# as well data of the currently active timing point.
+
+			# when our object has a higher starttime that our next timing point,
+			# and we still have a next timingpoint
+			# then CurrentTimingPoint = NextTimingPoint
+			# and we try to get a next one, or set None to ignore loop
+			while Obj.starttime >= NextTimingPoint.starttime and NextTimingPoint != None:
+				timing_index += 1
+				CurrentTimingPoint = self.timingpoints[timing_index]
+
+				# is there a next?
+				if len(self.timingpoints) >= (timing_index + 1):
+					NextTimingPoint = self.timingpoints[timing_index + 1]
+				else:
+					NextTimingPoint = None
+
+				slider_speed_multiplier:float = 1.0
+
+				if not CurrentTimingPoint.change and CurrentTimingPoint.ms_per_beat < 0:
+					slider_speed_multiplier = (-100 / CurrentTimingPoint.ms_per_beat)
+
+				px_per_beat = self.slider_multiplier * 100 * slider_speed_multiplier
+				if self.format_version < 8:
+					px_per_beat /= slider_speed_multiplier
+
+			beats:float = (Obj.distance * Obj.repetitions) / px_per_beat
+			ticks:int = math.ceil( (beats - 0.1) / Obj.repetitions * self.slider_tick_rate )
+
+			ticks -= 1
+			ticks *= Obj.repetitions
+			ticks += Obj.repetitions + 1
+
+			res += max(0, ticks)
+
+		return res

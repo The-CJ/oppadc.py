@@ -2,6 +2,8 @@ from typing import Generator, Iterator
 
 from .osutimingpoint import OsuTimingPoint
 
+MODE_STD:int = 0
+
 class OsuMap(object):
 	"""
 		contains all meta data about a map
@@ -155,6 +157,8 @@ class OsuMap(object):
 					self.parseDifficulty(line)
 				elif section == "TimingPoints":
 					self.parseTimingPoint(line)
+				elif section == "HitObjects":
+					self.parseHitObject(line)
 
 			except (ValueError, SyntaxError) as e:
 				raise e
@@ -207,6 +211,7 @@ class OsuMap(object):
 		elif prop[0] == "SliderTickRate":
 			self.slider_tick_rate = float(prop[1])
 
+	# timing
 	def parseTimingPoint(self, line:str) -> None:
 		# each timing points can contains up to 8 ',' separated values
 		s:list = line.split(',')
@@ -223,5 +228,22 @@ class OsuMap(object):
 
 		self.timingpoints.append(TPoint)
 
+	# hit objects
+	def parseHitObject(self, line:str) -> None:
+		if self.mode == MODE_STD:
+			self.parseHitObjectSTD(line)
+
+		else:
+			raise NotImplementedError()
+
+	def parseHitObjectSTD(self, line:str) -> None:
+		# each hitobject can contains up to 11 ',' separated values
+		s:list = line.split(',')
+
+		if len(s) > 11:
+			print("hiz object with trailing values")
+
+		elif len(s) < 5:
+			raise SyntaxError("hitobject must have at least 5 fields")
 
 	# calculations

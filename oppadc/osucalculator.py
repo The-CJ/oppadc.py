@@ -2,6 +2,9 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
 	from .osumap import OsuMap
 
+DIFF_SPEED:int = 0
+DIFF_AIM:int = 1
+
 class OsuCalculator(object):
 	"""
 		contains everything to calculate pp
@@ -20,5 +23,11 @@ class OsuCalculator(object):
 		self.amount_singles:int = 0
 		self.amount_singles_threshold:int = 0
 
-	def calc() -> None:
+	def __repr__(self) -> str:
+		return f"<{self.__class__.__name__} total={round(self.total, 2)} (aim={round(self.aim, 2)} speed={round(self.speed, 2)})>"
+
+	def __str__(self) -> str:
+		return self.__repr__()
+
+	def calc(self) -> None:
 		self.Map

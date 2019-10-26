@@ -24,7 +24,7 @@ class OsuDifficulty(object):
 		self.hp:float = Map.hp
 
 	def __repr__(self) -> str:
-		return f"<{self.__class__.__name__} ar={round(self.ar, 2)} cs={round(self.cs, 2)} od={round(self.od, 2)} hp={round(self.hp, 2)}>"
+		return f"<{self.__class__.__name__} ar={round(self.ar, 2)} cs={round(self.cs, 2)} od={round(self.od, 2)} hp={round(self.hp, 2)} mods='{self.mods}'>"
 
 	def __str__(self) -> str:
 		return self.__repr__()

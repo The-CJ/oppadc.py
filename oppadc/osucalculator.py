@@ -77,6 +77,10 @@ class OsuCalculator(object):
 		# normalize playarea, based on circle size
 		PlayfieldCenter *= scaling_factor
 
+		# give every object a NormPos before calculating stuff
+		self.calcNormPos(PlayfieldCenter, scaling_factor)
+
+	def calcNormPos(self, PlayfieldCenter:Vector, scaling_factor:float) -> None:
 		PrevObject1:OsuHitObject = None
 		PrevObject2:OsuHitObject = None
 		i:int = 0

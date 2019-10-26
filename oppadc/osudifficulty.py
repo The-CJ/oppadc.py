@@ -14,6 +14,9 @@ class OsuDifficulty(object):
 		applying mods will change the stats
 	"""
 	def __init__(self, Map:"OsuMap"):
+		self.Map:"OsuMap" = Map
+
+		self.mods:str = ""
 		self.speed_multiplier:float = 1.0
 		self.ar:float = Map.ar
 		self.cs:float = Map.cs
@@ -26,6 +29,14 @@ class OsuDifficulty(object):
 	def __str__(self) -> str:
 		return self.__repr__()
 
+	def reset(self) -> None:
+		self.speed_multiplier = 1.0
+		self.mods = ""
+		self.ar = self.Map.ar
+		self.cs = self.Map.cs
+		self.od = self.Map.od
+		self.hp = self.Map.hp
+
 	def applyMods(self, Mods:GeneralOsuMod or list or str or int=None, calc:list=["AR","OD","CS","HP"]) -> None:
 		if not Mods: return
 
@@ -36,6 +47,8 @@ class OsuDifficulty(object):
 			mods_value = OsuModIndex.getValueFromString(Mods)
 		elif type(Mods) is GeneralOsuMod:
 			mods_value = Mods.value
+
+		self.mods = OsuModIndex.getStringFromValue(mods_value)
 
 		OD0_MS:int = 80
 		OD10_MS:int = 20

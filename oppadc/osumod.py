@@ -107,7 +107,7 @@ class OsuModIndex(object):
 			16648 -> HDHTPF
 		"""
 
-		if not value: return self.get("NM")
+		if not value: return "NM"
 
 		res:str = ""
 		for mod in self.index:

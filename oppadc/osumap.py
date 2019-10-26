@@ -357,7 +357,7 @@ class OsuMap(object):
 			ticks -= 1
 			# times the repetition
 			ticks *= Obj.repetitions
-			# add one more repetition and readd endpoint
+			# add one more repetition and re-add endpoint
 			ticks += Obj.repetitions + 1
 
 			# we do this because...
@@ -374,8 +374,12 @@ class OsuMap(object):
 		self.__Diff.applyMods(Mods)
 		return self.__Diff
 
-	def getCalc(self) -> OsuCalculator:
-		if self.__Calc: return self.__Calc
+	def getCalc(self, Mods:GeneralOsuMod or list or str=None, recalculate:bool=False) -> OsuCalculator:
+		if self.__Calc and not recalculate: return self.__Calc
+
+		# generate diff object, its needed during the calc process
+		self.getDiff(Mods, recalculate)
 
 		self.__Calc = OsuCalculator(self)
+		self.__Calc.calc()
 		return self.__Calc

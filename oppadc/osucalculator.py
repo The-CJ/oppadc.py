@@ -10,6 +10,10 @@ from .osuobject import OsuHitObject, OSU_OBJ_SPINNER
 DIFF_SPEED:int = 0
 DIFF_AIM:int = 1
 
+#strain stuff
+DECAY_BASE:list = [ 0.3, 0.15 ] # strain decay per interval
+WEIGHT_SCALING:list = [ 1400.0, 26.25 ] # balances speed and aim
+
 class OsuCalculator(object):
 	"""
 		contains everything to calculate pp
@@ -80,6 +84,10 @@ class OsuCalculator(object):
 		# give every object a NormPos before calculating stuff
 		self.calcNormPos(PlayfieldCenter, scaling_factor)
 
+		# get pp and diff stats
+		speed = self.calcIndividual(Difficulty, DIFF_SPEED)
+		aim = self.calcIndividual(Difficulty, DIFF_AIM)
+
 	def calcNormPos(self, PlayfieldCenter:Vector, scaling_factor:float) -> None:
 		PrevObject1:OsuHitObject = None
 		PrevObject2:OsuHitObject = None
@@ -109,3 +117,43 @@ class OsuCalculator(object):
 			PrevObject2 = PrevObject1
 			PrevObject1 = Obj
 			i+=1
+
+	def calcIndividual(self, Difficulty:OsuDifficulty, difftype:int) -> None:
+		"""
+			difftype 0 = speed
+			difftype 1 = aim
+			calculates total strain for speed or aim
+			at this point, every hitobject must have a normpos
+			or overything is going to explode
+		"""
+		if difftype < 0: raise AttributeError("difftype is needed")
+		if not self.Map.hitobjects: raise RuntimeError("there is nothing to calculate")
+
+		# max strains are weighted from highest to lowest.
+		# this is how much the weight decays
+		DECAY_WEIGHT:float = 0.9
+
+		# NOTE From Francesco149:
+		# strains are calculated by analyzing the map in chunks
+		# and taking the peak strains in each chunk. this is the
+		# length of a strain interval in milliseconds
+		strain_step:float = 400.0 * Difficulty.speed_multiplier
+
+		# first object doesn't generate a strain so we begin with
+		# an incremented interval end
+		interval_end:float = math.ceil(self.Map.hitobjects[0].starttime / strain_step) * strain_step
+		max_strain:float = 0.0
+
+		# remember, skip first
+		for i, Obj in enumerate(self.Map.hitobjects[1:]):
+			PrevObject:OsuHitObject = self.Map.hitobjects[i]
+
+			self.delta_strain(difftype, PrevObject, Obj, Difficulty)
+
+	def deltaStrain(self, difftype:int, PrevObject:OsuHitObject, NowObject:OsuHitObject, Difficulty:OsuDifficulty) -> None:
+		"""
+			calculates the difftype strain value for a hitobject. stores
+			the result in obj.strains[difftype]
+			this assumes that normpos is already computed
+		"""
+		pass

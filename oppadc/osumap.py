@@ -63,7 +63,7 @@ class OsuMap(object):
 			self.parse()
 
 	def __repr__(self) -> str:
-		return f"<{self.__class__.__name__} title='{self.title}' set={self.mapset_id} map={self.map_id} >"
+		return f"<{self.__class__.__name__} title='{self.title}' set={self.mapset_id} map={self.map_id}>"
 
 	def __str__(self) -> str:
 		print_info:str = []
@@ -122,14 +122,12 @@ class OsuMap(object):
 		elif self.raw_str:
 			for line in self.raw_str.splitlines():
 				yield line
-			raise StopIteration()
 
 		elif self.file_path:
 			FileObject:Iterator[str] = open(self.file_path, mode='r', encoding="UTF-8")
 			self.found = True
 			for line in FileObject:
 				yield line
-			raise StopIteration()
 
 		else:
 			raise StopIteration()
@@ -146,12 +144,13 @@ class OsuMap(object):
 
 	def parse(self) -> None:
 
-		Source:generator = self.lineGenerator()
+		Source:Generator[str, None, None] = self.lineGenerator()
 
 		section:str = ""
 
 		for line in Source:
 			# ignore all types of commants
+			if not line: continue
 			if line[0] in [" ", "_"]: continue
 			if line[0:2] == "//": continue
 

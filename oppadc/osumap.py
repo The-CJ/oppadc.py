@@ -19,8 +19,8 @@ class OsuMap(object):
 		and difficulty with applied mods n self.Diff (self.ar, cs, etc... contains the unmodified version)
 	"""
 	def __init__(self, file_path:str=None, raw_str:str=None, auto_parse:bool=True):
-		self.__Calc:OsuCalculator = None
 		self.__Diff:OsuDifficulty = None
+		self.__Calc:OsuCalculator = None
 
 		# internal
 		self.file_path:str = file_path

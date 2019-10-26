@@ -29,14 +29,6 @@ class OsuDifficulty(object):
 	def __str__(self) -> str:
 		return self.__repr__()
 
-	def reset(self) -> None:
-		self.speed_multiplier = 1.0
-		self.mods = ""
-		self.ar = self.Map.ar
-		self.cs = self.Map.cs
-		self.od = self.Map.od
-		self.hp = self.Map.hp
-
 	def applyMods(self, Mods:GeneralOsuMod or list or str or int=None, calc:list=["AR","OD","CS","HP"]) -> None:
 		if not Mods: return
 

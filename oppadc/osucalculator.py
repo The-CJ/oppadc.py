@@ -48,7 +48,7 @@ class OsuCalculator(object):
 	def __str__(self) -> str:
 		return self.__repr__()
 
-	def calc(self) -> None:
+	def calc(self, singletap_threshold:int=125) -> None:
 		"""
 			calculates everything and stores it in self.*
 			self.total prob. is what most people want
@@ -120,6 +120,23 @@ class OsuCalculator(object):
 		self.total = self.aim + self.speed
 		# add extreme
 		self.total += abs(self.speed - self.aim) * EXTREME_SCALING_FACTOR
+
+		# single taps stats... do i need this? mm who cares
+		for i, Obj in enumerate(self.Map.hitobjects[1:]):
+			PrevObject:OsuHitObject = self.Map.hitobjects[i]
+
+			Obj:OsuHitObject = Obj
+
+			if Obj.is_single:
+				self.amount_singles += 1
+
+			if not Obj.osu_obj & (OSU_OBJ_CIRCLE | OSU_OBJ_SLIDER):
+				continue
+
+			interval:float = (Obj.starttime - PrevObject.starttime) - Difficulty.speed_multiplier
+
+			if interval >= singletap_threshold:
+				self.amount_singles_threshold += 1
 
 	def lengthBonus(self, stars:float, diff:float) -> float:
 		return 0.32 + ( 0.5 * (math.log10(diff + stars) - math.log10(stars)) )

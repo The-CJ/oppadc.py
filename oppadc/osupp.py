@@ -89,7 +89,7 @@ class OsuPP(object):
 
 		# global vars
 		amount_hitobjects:int = len(self.Map.hitobjects)
-		amount_objects_ober_2k:float = amount_hitobjects
+		amount_objects_ober_2k:float = amount_hitobjects / 2000
 		length_bonus:float = 0.95 + (0.4 * min(1, amount_objects_ober_2k))
 
 		if amount_hitobjects > 2000:
@@ -154,7 +154,7 @@ class OsuPP(object):
 
 		# more stuff added
 		self.speed_pp *= (0.02 + accuracy)
-		self.speed_pp *= (0.96 + (od_squared * 1600))
+		self.speed_pp *= (0.96 + (od_squared / 1600))
 
 		# acc pp - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		self.acc_pp = (1.52163 ** Difficulty.od) * (real_acc ** 24) * 2.83

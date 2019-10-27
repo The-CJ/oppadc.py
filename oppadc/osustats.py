@@ -24,9 +24,9 @@ SPEED_ANGLE_BONUS_BEGIN:float = 5 * math.pi / 6
 AIM_ANGLE_BONUS_BEGIN:float = math.pi / 3
 SINGLE_SPACING:int = 125 # arbitrary thresholds to determine when a stream is spaced enough that it becomes hard to alternate
 
-class OsuCalculator(object):
+class OsuStats(object):
 	"""
-		contains everything to calculate pp
+		contains everything to calculate star rating and more
 	"""
 	def __init__(self, Map:"OsuMap"):
 		self.Map:"OsuMap" = Map
@@ -63,7 +63,7 @@ class OsuCalculator(object):
 			that will be considered singletappable, defaults to 125ms
 			which is 240 bpm 1/2 ((60000 / 240) / 2)
 		"""
-		Difficulty:OsuDifficulty = self.Map.getDiff()
+		Difficulty:OsuDifficulty = self.Map.getDifficulty()
 
 		# non-normalized diameter where the small circle size buff starts
 		CIRCLESIZE_BUFF_THRESHOLD:int = 30

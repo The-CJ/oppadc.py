@@ -2,7 +2,7 @@ from typing import Generator, Iterator
 
 import math
 from .osumod import GeneralOsuMod
-from .osucalculator import OsuCalculator
+from .osustats import OsuStats
 from .osudifficulty import OsuDifficulty
 from .osutimingpoint import OsuTimingPoint
 from .osuobject import (
@@ -20,7 +20,7 @@ class OsuMap(object):
 	"""
 	def __init__(self, file_path:str=None, raw_str:str=None, auto_parse:bool=True):
 		self.__Diff:OsuDifficulty = None
-		self.__Calc:OsuCalculator = None
+		self.__Stat:OsuStats = None
 
 		# internal
 		self.file_path:str = file_path
@@ -367,19 +367,19 @@ class OsuMap(object):
 
 		return res
 
-	def getDiff(self, Mods:GeneralOsuMod or list or str=None, recalculate:bool=False) -> OsuDifficulty:
+	def getDifficulty(self, Mods:GeneralOsuMod or list or str=None, recalculate:bool=False) -> OsuDifficulty:
 		if self.__Diff and not recalculate: return self.__Diff
 
 		self.__Diff = OsuDifficulty(self)
 		self.__Diff.applyMods(Mods)
 		return self.__Diff
 
-	def getCalc(self, Mods:GeneralOsuMod or list or str=None, recalculate:bool=False) -> OsuCalculator:
-		if self.__Calc and not recalculate: return self.__Calc
+	def getStats(self, Mods:GeneralOsuMod or list or str=None, recalculate:bool=False) -> OsuStats:
+		if self.__Stat and not recalculate: return self.__Stat
 
 		# generate diff object, its needed during the calc process
-		self.getDiff(Mods, recalculate)
+		self.getDifficulty(Mods, recalculate)
 
-		self.__Calc = OsuCalculator(self)
-		self.__Calc.calc()
-		return self.__Calc
+		self.__Stat = OsuStats(self)
+		self.__Stat.calc()
+		return self.__Stat

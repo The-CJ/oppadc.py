@@ -4,6 +4,7 @@ import math
 from .osumod import GeneralOsuMod
 from .osustats import OsuStats
 from .osudifficulty import OsuDifficulty
+from .osupp import OsuPP
 from .osutimingpoint import OsuTimingPoint
 from .osuobject import (
 	OSU_OBJ_CIRCLE, OSU_OBJ_SLIDER, OSU_OBJ_SPINNER,
@@ -21,6 +22,7 @@ class OsuMap(object):
 	def __init__(self, file_path:str=None, raw_str:str=None, auto_parse:bool=True):
 		self.__Diff:OsuDifficulty = None
 		self.__Stat:OsuStats = None
+		self.__PP:OsuPP = None
 
 		# internal
 		self.file_path:str = file_path
@@ -378,8 +380,19 @@ class OsuMap(object):
 		if self.__Stat and not recalculate: return self.__Stat
 
 		# generate diff object, its needed during the calc process
-		self.getDifficulty(Mods, recalculate)
+		self.getDifficulty(Mods=Mods, recalculate=recalculate)
 
 		self.__Stat = OsuStats(self)
 		self.__Stat.calc()
 		return self.__Stat
+
+	def getPP(self, Mods:GeneralOsuMod or list or str=None, recalculate:bool=False) -> OsuPP:
+		if self.__PP and not recalculate: return self.__PP
+
+		# to calculate the pp, we need the stats, which needs the applied difficulty
+		# aka, u want pp, u calculate everything
+		self.getStats(Mods=Mods, recalculate=recalculate)
+
+		self.__PP = OsuPP(self)
+		self.__PP.calc()
+		return self.__PP

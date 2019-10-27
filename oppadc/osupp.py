@@ -20,10 +20,18 @@ class OsuPP(object):
 	def __init__(self, Map:"OsuMap"):
 		self.Map:"OsuMap" = Map
 
+		self.accuracy:float = 0.0
+
 		self.total_pp:float = 0.0
 		self.aim_pp:float = 0.0
 		self.speed_pp:float = 0.0
 		self.acc_pp:float = 0.0
+
+	def __str__(self):
+		return self.__repr__()
+
+	def __repr__(self):
+		return f"<{self.__class__.__name__} total={round(self.total_pp,3)}pp (aim={round(self.aim_pp,2)} speed={round(self.speed_pp,2)} acc={round(self.acc_pp,2)}) [{round(self.accuracy,2)}%]>"
 
 	def calc(self, version:int=2, accuracy:float=100, combo:int=None, misses:int=0, n300:int=None, n100:int=None, n50:int=None) -> None:
 		"""
@@ -167,6 +175,8 @@ class OsuPP(object):
 			final_multiplier *= 0.95
 
 		self.total_pp = (( (self.aim_pp**1.1) + (self.speed_pp**1.1) + (self.acc_pp**1.1) ) ** (1.0/1.1)) * final_multiplier
+		# set the calc we calculated with
+		self.accuracy = accuracy * 100
 
 	def getBasePP(self, stars:float) -> float:
 		return (((5 * max( 1, (stars / 0.0675) )) - 4) ** 3) / 100000

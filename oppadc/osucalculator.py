@@ -6,6 +6,7 @@ import math
 from .vector import Vector
 from .osudifficulty import OsuDifficulty
 from .osuobject import OsuHitObject, OSU_OBJ_SPINNER, OSU_OBJ_CIRCLE, OSU_OBJ_SLIDER
+from .osumod import OsuModIndex
 
 DIFF_SPEED:int = 0
 DIFF_AIM:int = 1
@@ -97,9 +98,31 @@ class OsuCalculator(object):
 		speed = self.calcIndividual(Difficulty, DIFF_SPEED)
 		aim = self.calcIndividual(Difficulty, DIFF_AIM)
 
-		# TODO: x
-		print(speed)
-		print(aim)
+		# tempraly stars diff
+		self.speed = speed[0]
+		self.aim = aim[0]
+
+		self.speed_difficulty = speed[1]
+		self.aim_difficulty = aim[1]
+
+		self.aim_length_bonus = self.lengthBonus(self.aim, self.aim_difficulty)
+		self.speed_difficulty = self.lengthBonus(self.speed, self.speed_difficulty)
+
+		# actully star count
+		self.aim = math.sqrt(self.aim) * STAR_SCALING_FACTOR
+		self.speed = math.sqrt(self.speed) * STAR_SCALING_FACTOR
+
+		# punish all touchscreen user
+		if Difficulty.mods_value & OsuModIndex.getValueFromString("TD"):
+			self.aim = self.aim ** 0.8
+
+		# set total stars
+		self.total = self.aim + self.speed
+		# add extreme
+		self.total += abs(self.speed - self.aim) * EXTREME_SCALING_FACTOR
+
+	def lengthBonus(self, stars:float, diff:float) -> float:
+		return 0.32 + ( 0.5 * (math.log10(diff + stars) - math.log10(stars)) )
 
 	def calcNormPos(self, PlayfieldCenter:Vector, scaling_factor:float) -> None:
 		PrevObject1:OsuHitObject = None

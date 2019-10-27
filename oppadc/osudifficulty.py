@@ -16,7 +16,9 @@ class OsuDifficulty(object):
 	def __init__(self, Map:"OsuMap"):
 		self.Map:"OsuMap" = Map
 
-		self.mods:str = ""
+		self.mods_str:str = ""
+		self.mods_value:int = 0
+
 		self.speed_multiplier:float = 1.0
 		self.ar:float = Map.ar
 		self.cs:float = Map.cs
@@ -40,7 +42,8 @@ class OsuDifficulty(object):
 		elif type(Mods) is GeneralOsuMod:
 			mods_value = Mods.value
 
-		self.mods = OsuModIndex.getStringFromValue(mods_value)
+		self.mods_value = mods_value
+		self.mods_str = OsuModIndex.getStringFromValue(mods_value)
 
 		OD0_MS:int = 80
 		OD10_MS:int = 20

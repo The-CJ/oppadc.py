@@ -20,6 +20,11 @@ class OsuPP(object):
 	def __init__(self, Map:"OsuMap"):
 		self.Map:"OsuMap" = Map
 
+		self.total_pp:float = 0.0
+		self.aim_pp:float = 0.0
+		self.speed_pp:float = 0.0
+		self.acc_pp:float = 0.0
+
 	def calc(self, version:int=2, accuracy:float=100, combo:int=None, misses:int=0, n300:int=None, n100:int=None, n50:int=None) -> None:
 		"""
 			calculates the total pp (by standard PPv2) with the called arguments
@@ -91,17 +96,17 @@ class OsuPP(object):
 			ar_bonus += 0.1 * (8.0 - Difficulty.ar)
 
 		# aim pp - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		aim_pp:float = self.getBasePP(Stats.aim)
-		aim_pp *= length_bonus
-		aim_pp *= miss_penality
-		aim_pp *= combo_break
-		aim_pp *= ar_bonus
+		self.aim_pp = self.getBasePP(Stats.aim)
+		self.aim_pp *= length_bonus
+		self.aim_pp *= miss_penality
+		self.aim_pp *= combo_break
+		self.aim_pp *= ar_bonus
 
 		# hd bonus
 		hd_bonus:float = 1.0
 		if Difficulty.mods_value & MOD_HD:
 			hd_bonus += (0.04 * (12 - Difficulty.ar))
-			aim_pp *= hd_bonus
+			self.aim_pp *= hd_bonus
 
 		# fl bonus
 		if Difficulty.mods_value & MOD_FL:
@@ -113,44 +118,44 @@ class OsuPP(object):
 			if amount_hitobjects > 500:
 				fl_bonus += (amount_hitobjects-500) / 1200
 
-			aim_pp *= fl_bonus
+			self.aim_pp *= fl_bonus
 
 		# acc and od bonus
 		acc_bonus:float = 0.5 + (accuracy / 1)
 		od_squared = Difficulty.od * Difficulty.od
 		od_bonus:float = 0.98 + (od_squared / 2500)
 
-		aim_pp *= acc_bonus
-		aim_pp *= od_bonus
+		self.aim_pp *= acc_bonus
+		self.aim_pp *= od_bonus
 
 		# speed pp - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		speed_pp:float = self.getBasePP(Stats.speed)
-		speed_pp *= length_bonus
-		speed_pp *= miss_penality
-		speed_pp *= combo_break
+		self.speed_pp = self.getBasePP(Stats.speed)
+		self.speed_pp *= length_bonus
+		self.speed_pp *= miss_penality
+		self.speed_pp *= combo_break
 
 		# high ar bonus
 		if Difficulty.ar > 10.33:
-			speed_pp *= ar_bonus
+			self.speed_pp *= ar_bonus
 
 		# hd bonus
-		speed_pp *= hd_bonus
+		self.speed_pp *= hd_bonus
 
 		# more stuff added
-		speed_pp *= (0.02 + accuracy)
-		speed_pp *= (0.96 + (od_squared * 1600))
+		self.speed_pp *= (0.02 + accuracy)
+		self.speed_pp *= (0.96 + (od_squared * 1600))
 
 		# acc pp - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		acc_pp:float = (1.52163 ** Difficulty.od) * (real_acc ** 24) * 2.83
+		self.acc_pp = (1.52163 ** Difficulty.od) * (real_acc ** 24) * 2.83
 
 		# length bonus (not the same as speed/aim length bonus)
-		acc_pp *= min(1.15, ((amount_circle/1000) ** 0.3))
+		self.acc_pp *= min(1.15, ((amount_circle/1000) ** 0.3))
 
 		if Difficulty.mods_value & MOD_HD:
-			acc_pp *= 1.08
+			self.acc_pp *= 1.08
 
 		if Difficulty.mods_value & MOD_FL:
-			acc_pp *= 1.02
+			self.acc_pp *= 1.02
 
 		# total pp - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		final_multiplier:float = 1.12
@@ -161,7 +166,7 @@ class OsuPP(object):
 		if Difficulty.mods_value & MOD_SO:
 			final_multiplier *= 0.95
 
-		total_pp:float = (( (aim_pp**1.1) + (speed_pp**1.1) + (acc_pp**1.1) ) ** (1.0/1.1)) * final_multiplier
+		self.total_pp = (( (self.aim_pp**1.1) + (self.speed_pp**1.1) + (self.acc_pp**1.1) ) ** (1.0/1.1)) * final_multiplier
 
 	def getBasePP(self, stars:float) -> float:
 		return (((5 * max( 1, (stars / 0.0675) )) - 4) ** 3) / 100000

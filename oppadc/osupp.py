@@ -8,6 +8,11 @@ from .osustats import OsuStats
 from .osudifficulty import OsuDifficulty
 from .osugamemode import MODE_STD
 
+MOD_HD:int = OsuModIndex.getValueFromString("HD")
+MOD_FL:int = OsuModIndex.getValueFromString("FL")
+MOD_SO:int = OsuModIndex.getValueFromString("FL")
+MOD_NF:int = OsuModIndex.getValueFromString("FL")
+
 class OsuPP(object):
 	"""
 		Holds all methods to get the wanted pp values
@@ -42,6 +47,8 @@ class OsuPP(object):
 			raise NotImplementedError("no need to ppV2")
 
 		# re-calc accuracy
+		amount_hitobjects:int = len(self.Map.hitobjects)
+		amount_circle:int = self.Map.amount_circle
 		accuracy = self.getAccFromValues(n300, n100, n50, misses)
 		real_acc:float = accuracy
 
@@ -59,7 +66,7 @@ class OsuPP(object):
 			real_acc = max(0.0, real_acc)
 
 		elif version == 2:
-			pass
+			amount_circle = amount_hitobjects
 
 		else:
 			raise NotImplementedError(f"unknown score version: {version}")
@@ -75,7 +82,6 @@ class OsuPP(object):
 		miss_penality:float = 0.97 ** misses
 		combo_break:float = (combo**0.8) / (max_combo**0.8)
 
-
 		# ar bonus
 		ar_bonus:float = 1.0
 		if Difficulty.ar > 10.33:
@@ -84,7 +90,7 @@ class OsuPP(object):
 		elif Difficulty.ar < 8.0:
 			ar_bonus += 0.1 * (8.0 - Difficulty.ar)
 
-		# aim pp
+		# aim pp - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		aim_pp:float = self.getBasePP(Stats.aim)
 		aim_pp *= length_bonus
 		aim_pp *= miss_penality
@@ -92,20 +98,70 @@ class OsuPP(object):
 		aim_pp *= ar_bonus
 
 		# hd bonus
-		if Difficulty.mods_value & OsuModIndex.getValueFromString("HD"):
-			aim_pp *= (1 + ( 0.04 * (12 - Difficulty.ar) ))
+		hd_bonus:float = 1.0
+		if Difficulty.mods_value & MOD_HD:
+			hd_bonus += (0.04 * (12 - Difficulty.ar))
+			aim_pp *= hd_bonus
 
 		# fl bonus
-		if Difficulty.mods_value & OsuModIndex.getValueFromString("FL"):
+		if Difficulty.mods_value & MOD_FL:
 			fl_bonus:float = 1 + (0.35 * min(1, amount_hitobjects/200))
 
 			if amount_hitobjects > 200:
 				fl_bonus += 0.3 * min(1, ((amount_hitobjects-200)/300) )
 
 			if amount_hitobjects > 500:
-				fl_bonus += (amount_hitobjects-500) / 1200  
+				fl_bonus += (amount_hitobjects-500) / 1200
 
 			aim_pp *= fl_bonus
+
+		# acc and od bonus
+		acc_bonus:float = 0.5 + (accuracy / 1)
+		od_squared = Difficulty.od * Difficulty.od
+		od_bonus:float = 0.98 + (od_squared / 2500)
+
+		aim_pp *= acc_bonus
+		aim_pp *= od_bonus
+
+		# speed pp - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		speed_pp:float = self.getBasePP(Stats.speed)
+		speed_pp *= length_bonus
+		speed_pp *= miss_penality
+		speed_pp *= combo_break
+
+		# high ar bonus
+		if Difficulty.ar > 10.33:
+			speed_pp *= ar_bonus
+
+		# hd bonus
+		speed_pp *= hd_bonus
+
+		# more stuff added
+		speed_pp *= (0.02 + accuracy)
+		speed_pp *= (0.96 + (od_squared * 1600))
+
+		# acc pp - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		acc_pp:float = (1.52163 ** Difficulty.od) * (real_acc ** 24) * 2.83
+
+		# length bonus (not the same as speed/aim length bonus)
+		acc_pp *= min(1.15, ((amount_circle/1000) ** 0.3))
+
+		if Difficulty.mods_value & MOD_HD:
+			acc_pp *= 1.08
+
+		if Difficulty.mods_value & MOD_FL:
+			acc_pp *= 1.02
+
+		# total pp - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		final_multiplier:float = 1.12
+
+		if Difficulty.mods_value & MOD_NF:
+			final_multiplier *= 0.9
+
+		if Difficulty.mods_value & MOD_SO:
+			final_multiplier *= 0.95
+
+		total_pp:float = (( (aim_pp**1.1) + (speed_pp**1.1) + (acc_pp**1.1) ) ** (1.0/1.1)) * final_multiplier
 
 	def getBasePP(self, stars:float) -> float:
 		return (((5 * max( 1, (stars / 0.0675) )) - 4) ** 3) / 100000

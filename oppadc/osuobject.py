@@ -30,8 +30,9 @@ class OsuHitObjectCircle(OsuHitObject):
 	"""
 		representats a single circle object
 	"""
-	def __init__(self, starttime:float or str, Pos:Vector=Vector()):
+	def __init__(self, starttime:float or str, Pos:Vector=None):
 		super().__init__(starttime)
+		if not Pos: Pos = Vector()
 
 		self.osu_obj = OSU_OBJ_CIRCLE
 		self.Pos = Pos
@@ -40,8 +41,9 @@ class OsuHitObjectSlider(OsuHitObject):
 	"""
 		representats a single slider object
 	"""
-	def __init__(self, starttime:float or str, Pos:Vector=Vector(), distance:float or str=0.0, repetitions:int or str=0):
+	def __init__(self, starttime:float or str, Pos:Vector=None, distance:float or str=0.0, repetitions:int or str=0):
 		super().__init__(starttime)
+		if not Pos: Pos = Vector()
 
 		self.osu_obj = OSU_OBJ_SLIDER
 		self.Pos = Pos

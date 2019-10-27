@@ -97,6 +97,9 @@ class OsuCalculator(object):
 		speed = self.calcIndividual(Difficulty, DIFF_SPEED)
 		aim = self.calcIndividual(Difficulty, DIFF_AIM)
 
+		print(speed)
+		print(aim)
+
 	def calcNormPos(self, PlayfieldCenter:Vector, scaling_factor:float) -> None:
 		PrevObject1:OsuHitObject = None
 		PrevObject2:OsuHitObject = None
@@ -127,7 +130,7 @@ class OsuCalculator(object):
 			PrevObject1 = Obj
 			i+=1
 
-	def calcIndividual(self, Difficulty:OsuDifficulty, difftype:int) -> None:
+	def calcIndividual(self, Difficulty:OsuDifficulty, difftype:int) -> tuple:
 		"""
 			difftype 0 = speed
 			difftype 1 = aim
@@ -154,11 +157,44 @@ class OsuCalculator(object):
 		max_strain:float = 0.0
 
 		# remember, skip first
-		for i, Obj in enumerate(self.Map.hitobjects[1:]):
+		for i, NowObject in enumerate(self.Map.hitobjects[1:]):
 			PrevObject:OsuHitObject = self.Map.hitobjects[i]
 
 			# calculate all strains for all objects
-			self.deltaStrain(difftype, PrevObject, Obj, Difficulty)
+			self.deltaStrain(difftype, PrevObject, NowObject, Difficulty)
+
+			while NowObject.starttime > interval_end:
+				# add max strain for this interval
+				self.strains.append(max_strain)
+
+				# decay last object's strains until the next
+				# interval and use that as the initial max strain
+				decay = pow(
+					DECAY_BASE[difftype],
+					(interval_end - PrevObject.starttime) / 1000.0
+				)
+
+				max_strain = PrevObject.strains[difftype] * decay
+				interval_end += strain_step
+
+			max_strain = max(max_strain, NowObject.strains[difftype])
+
+		# re-add last strain
+		self.strains.append(max_strain)
+
+		# weight the top strains sorted from highest to lowest
+		weight:float = 1.0
+		total:float = 0.0
+		difficulty:float = 0.0
+
+		self.strains.sort(reverse=True)
+
+		for strain in self.strains:
+			total += pow(strain, 1.2)
+			difficulty += strain * weight
+			weight *= DECAY_WEIGHT
+
+		return ( difficulty, total )
 
 	def deltaStrain(self, difftype:int, PrevObject:OsuHitObject, NowObject:OsuHitObject, Difficulty:OsuDifficulty) -> None:
 		"""
@@ -200,10 +236,10 @@ class OsuCalculator(object):
 		# Or because im dumb ¯\_(ツ)_/¯
 
 		if x[0] == DIFF_AIM:
-			self.deltaSpacingWeightAim(*x)
+			return self.deltaSpacingWeightAim(*x)
 
 		elif x[0] == DIFF_SPEED:
-			self.deltaSpacingWeightSpeed(*x)
+			return self.deltaSpacingWeightSpeed(*x)
 
 		else:
 			raise NotImplementedError()

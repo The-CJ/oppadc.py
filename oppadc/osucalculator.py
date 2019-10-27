@@ -285,15 +285,19 @@ class OsuCalculator(object):
 		if angle != None and angle < SPEED_ANGLE_BONUS_BEGIN:
 			sin:float = math.sin( 1.5 * (SPEED_ANGLE_BONUS_BEGIN - angle) )
 			angle_bonus += (sin * sin / 3.57)
-			if delta_distance < ANGLE_BONUS_SCALE and angle < (math.pi / 4):
-				angle_bonus_part = (1 - angle_bonus)
-				angle_bonus_part *= min( (ANGLE_BONUS_SCALE - delta_distance) / 10, 1 )
-				angle_bonus += angle_bonus_part
-			elif delta_distance < ANGLE_BONUS_SCALE:
-				angle_bonus_part = (1 - angle_bonus)
-				angle_bonus_part *= min( (ANGLE_BONUS_SCALE - delta_distance) / 10, 1 )
-				angle_bonus_part *= math.sin((math.pi / 2.0 - angle) * 4.0 / math.pi)
-				angle_bonus += angle_bonus_part
+
+			if angle < math.pi / 2:
+				angle_bonus = 1.28
+
+				if delta_distance < ANGLE_BONUS_SCALE and angle < (math.pi / 4):
+					angle_bonus_part = (1 - angle_bonus)
+					angle_bonus_part *= min( (ANGLE_BONUS_SCALE - delta_distance) / 10, 1 )
+					angle_bonus += angle_bonus_part
+				elif delta_distance < ANGLE_BONUS_SCALE:
+					angle_bonus_part = (1 - angle_bonus)
+					angle_bonus_part *= min( (ANGLE_BONUS_SCALE - delta_distance) / 10, 1 )
+					angle_bonus_part *= math.sin((math.pi / 2.0 - angle) * 4.0 / math.pi)
+					angle_bonus += angle_bonus_part
 
 		res:float = (1 + (speed_bonus - 1) * 0.75)
 		res *= angle_bonus

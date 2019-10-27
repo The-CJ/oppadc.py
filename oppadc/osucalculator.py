@@ -97,6 +97,7 @@ class OsuCalculator(object):
 		speed = self.calcIndividual(Difficulty, DIFF_SPEED)
 		aim = self.calcIndividual(Difficulty, DIFF_AIM)
 
+		# TODO: x
 		print(speed)
 		print(aim)
 
@@ -229,9 +230,10 @@ class OsuCalculator(object):
 
 	def deltaSpacingWeight(self, *x) -> tuple:
 		# NOTE: everything happening in this part... is to high for me
-		# i don't really understand it, maybe because i never looked into te details,
-		# how everything is calculated.
+		# i don't really understand it, maybe because i never looked into the details,
+		# or the wiki how everything is calculated. Im sure it can be looked up somewhere, i don't know
 		# Or because im dumb ¯\_(ツ)_/¯
+		# By the way, once again for Francesco149 for already searching all calculations together
 
 		if x[0] == DIFF_AIM:
 			return self.deltaSpacingWeightAim(*x)

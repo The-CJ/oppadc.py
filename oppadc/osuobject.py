@@ -12,6 +12,7 @@ class OsuHitObject(object):
 	def __init__(self, starttime:float or str):
 		self.osu_obj:int = 0
 		self.starttime:float = float(starttime)
+		self.Pos:Vector = Vector()
 		self.NormPos:Vector = Vector()
 		self.angle:float = 0.0
 		self.strains:list = [0.0, 0.0]
@@ -23,7 +24,7 @@ class OsuHitObject(object):
 		return self.__repr__()
 
 	def __repr__(self):
-		return f"<{self.__class__.__name__} {self.starttime}ms normpos={self.NormPos} strains={self.strains} is_single={str(self.is_single)}>"
+		return f"<{self.__class__.__name__} {self.starttime}ms Pos={self.Pos} NormPos={self.NormPos} strains={self.strains} is_single={str(self.is_single)}>"
 
 class OsuHitObjectCircle(OsuHitObject):
 	"""
@@ -33,7 +34,7 @@ class OsuHitObjectCircle(OsuHitObject):
 		super().__init__(starttime)
 
 		self.osu_obj = OSU_OBJ_CIRCLE
-		self.Pos:Vector = Pos
+		self.Pos = Pos
 
 class OsuHitObjectSlider(OsuHitObject):
 	"""
@@ -43,7 +44,7 @@ class OsuHitObjectSlider(OsuHitObject):
 		super().__init__(starttime)
 
 		self.osu_obj = OSU_OBJ_SLIDER
-		self.Pos:Vector = Pos
+		self.Pos = Pos
 		self.distance:float = float(distance)
 		self.repetitions:int = int(repetitions)
 

@@ -105,8 +105,6 @@ class OsuCalculator(object):
 		PrevObject2:OsuHitObject = None
 		i:int = 0
 		for Obj in self.Map.hitobjects:
-			Obj:OsuHitObject = Obj
-
 			# spinner dont have a position, so we give it one
 			if Obj.osu_obj & OSU_OBJ_SPINNER:
 				Obj.NormPos = PlayfieldCenter * 1
@@ -210,7 +208,7 @@ class OsuCalculator(object):
 		decay:float = (DECAY_BASE[difftype]) ** (time_elapsed/1000)
 
 		# this implementation doesn't account for sliders
-		if NowObject.osu_obj & (OSU_OBJ_CIRCLE | OSU_OBJ_SLIDER):
+		if NowObject.osu_obj & ( OSU_OBJ_SLIDER | OSU_OBJ_CIRCLE):
 			distance:float = (NowObject.NormPos - PrevObject.NormPos).length
 			NowObject.delta_distance = distance
 

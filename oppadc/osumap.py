@@ -10,8 +10,7 @@ from .osuobject import (
 	OSU_OBJ_CIRCLE, OSU_OBJ_SLIDER, OSU_OBJ_SPINNER,
 	OsuHitObjectCircle, OsuHitObjectSlider, OsuHitObjectSpinner
 )
-
-MODE_STD:int = 0
+from .osugamemode import MODE_STD
 
 class OsuMap(object):
 	"""

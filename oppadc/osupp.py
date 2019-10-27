@@ -21,6 +21,7 @@ class OsuPP(object):
 		self.Map:"OsuMap" = Map
 
 		self.accuracy:float = 0.0
+		self.combo:int = 0
 
 		self.total_pp:float = 0.0
 		self.aim_pp:float = 0.0
@@ -175,8 +176,9 @@ class OsuPP(object):
 			final_multiplier *= 0.95
 
 		self.total_pp = (( (self.aim_pp**1.1) + (self.speed_pp**1.1) + (self.acc_pp**1.1) ) ** (1.0/1.1)) * final_multiplier
-		# set the calc we calculated with
+		# set the vars we calculated with
 		self.accuracy = accuracy * 100
+		self.combo = combo
 
 	def getBasePP(self, stars:float) -> float:
 		return (((5 * max( 1, (stars / 0.0675) )) - 4) ** 3) / 100000

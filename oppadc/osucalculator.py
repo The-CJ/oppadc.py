@@ -43,7 +43,7 @@ class OsuCalculator(object):
 		self.amount_singles_threshold:int = 0
 
 	def __repr__(self) -> str:
-		return f"<{self.__class__.__name__} total={round(self.total, 2)}pp (aim={round(self.aim, 2)} speed={round(self.speed, 2)})>"
+		return f"<{self.__class__.__name__} stars={round(self.total, 2)} (aim={round(self.aim, 2)} speed={round(self.speed, 2)})>"
 
 	def __str__(self) -> str:
 		return self.__repr__()

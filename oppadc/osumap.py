@@ -386,7 +386,16 @@ class OsuMap(object):
 		self.__Stat.calc()
 		return self.__Stat
 
-	def getPP(self, Mods:GeneralOsuMod or list or str=None, recalculate:bool=False) -> OsuPP:
+	def getPP(self, Mods:GeneralOsuMod or list or str=None, recalculate:bool=False, **kwargs:dict) -> OsuPP:
+		"""
+			allowed kwargs:
+				accuracy:float
+				combo:int
+				misses:int
+				n300:int
+				n100:int
+				n50:int
+		"""
 		if self.__PP and not recalculate: return self.__PP
 
 		# to calculate the pp, we need the stats, which needs the applied difficulty
@@ -394,5 +403,5 @@ class OsuMap(object):
 		self.getStats(Mods=Mods, recalculate=recalculate)
 
 		self.__PP = OsuPP(self)
-		self.__PP.calc()
+		self.__PP.calc(**kwargs)
 		return self.__PP

@@ -209,6 +209,7 @@ class OsuCalculator(object):
 		decay:float = (DECAY_BASE[difftype]) ** (time_elapsed/1000)
 
 		# this implementation doesn't account for sliders
+		# Note from me to Francesco149: sliders? do you mean spinners?
 		if NowObject.osu_obj & ( OSU_OBJ_SLIDER | OSU_OBJ_CIRCLE):
 			distance:float = (NowObject.NormPos - PrevObject.NormPos).length
 			NowObject.delta_distance = distance

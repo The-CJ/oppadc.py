@@ -5,14 +5,23 @@ if TYPE_CHECKING:
 import math
 from .vector import Vector
 from .osudifficulty import OsuDifficulty
-from .osuobject import OsuHitObject, OSU_OBJ_SPINNER
+from .osuobject import OsuHitObject, OSU_OBJ_SPINNER, OSU_OBJ_CIRCLE, OSU_OBJ_SLIDER
 
 DIFF_SPEED:int = 0
 DIFF_AIM:int = 1
 
-#strain stuff
+# strain stuff
 DECAY_BASE:list = [ 0.3, 0.15 ] # strain decay per interval
 WEIGHT_SCALING:list = [ 1400.0, 26.25 ] # balances speed and aim
+
+# spacing weight stuff
+MIN_SPEED_BONUS:int = 75 # ~200BPM 1/4 streams
+MAX_SPEED_BONUS:int = 45 # ~330BPM 1/4 streams
+ANGLE_BONUS_SCALE:int = 90
+AIM_TIMING_THRESHOLD:int = 107
+SPEED_ANGLE_BONUS_BEGIN:float = 5 * math.pi / 6
+AIM_ANGLE_BONUS_BEGIN:float = math.pi / 3
+SINGLE_SPACING:int = 125 # arbitrary thresholds to determine when a stream is spaced enough that it becomes hard to alternate
 
 class OsuCalculator(object):
 	"""
@@ -148,12 +157,110 @@ class OsuCalculator(object):
 		for i, Obj in enumerate(self.Map.hitobjects[1:]):
 			PrevObject:OsuHitObject = self.Map.hitobjects[i]
 
-			self.delta_strain(difftype, PrevObject, Obj, Difficulty)
+			# calculate all strains for all objects
+			self.deltaStrain(difftype, PrevObject, Obj, Difficulty)
 
 	def deltaStrain(self, difftype:int, PrevObject:OsuHitObject, NowObject:OsuHitObject, Difficulty:OsuDifficulty) -> None:
 		"""
-			calculates the difftype strain value for a hitobject. stores
+			calculates the difftype strain value for a hitobject.
+			stores
 			the result in obj.strains[difftype]
 			this assumes that normpos is already computed
 		"""
-		pass
+
+		value:float = 0.0
+		time_elapsed:float = (NowObject.starttime - PrevObject.starttime) / Difficulty.speed_multiplier
+		NowObject.delta_time = time_elapsed
+		decay:float = (DECAY_BASE[difftype]) ** (time_elapsed/1000)
+
+		# this implementation doesn't account for sliders
+		if NowObject.osu_obj & (OSU_OBJ_CIRCLE | OSU_OBJ_SLIDER):
+			distance:float = (NowObject.NormPos - PrevObject.NormPos).length
+			NowObject.delta_distance = distance
+
+			value, is_single = self.deltaSpacingWeight(
+				difftype,
+				NowObject.delta_distance, NowObject.delta_time,
+				PrevObject.delta_distance, PrevObject.delta_time,
+				NowObject.angle
+			)
+
+			value *= WEIGHT_SCALING[difftype]
+
+			# we found out the object is a single type, so we set it
+			if difftype == DIFF_SPEED:
+				NowObject.is_single = is_single
+
+		NowObject.strains[difftype] = PrevObject.strains[difftype] * decay * value
+
+	def deltaSpacingWeight(self, *x) -> tuple:
+		# NOTE: everything happening in this part... is to high for me
+		# i don't really understand it, maybe because i never looked into te details,
+		# how everything is calculated.
+		# Or because im dumb ¯\_(ツ)_/¯
+
+		if x[0] == DIFF_AIM:
+			self.deltaSpacingWeightAim(*x)
+
+		elif x[0] == DIFF_SPEED:
+			self.deltaSpacingWeightSpeed(*x)
+
+		else:
+			raise NotImplementedError()
+
+	def deltaSpacingWeightAim(self, difftype:int, delta_distance:float, delta_time:float, prev_delta_distance:float, prev_delta_time:float, angle:float) -> tuple:
+
+		strain_time:float = max(delta_time, 50.0)
+		prev_strain_time:float = max(prev_delta_time, 50.0)
+
+		result:float = 0.0
+
+		# aim angle bonus
+		if angle != None and angle > AIM_ANGLE_BONUS_BEGIN:
+			angle_bonus:float = math.sqrt(
+				max(prev_delta_distance - ANGLE_BONUS_SCALE, 0.0) *
+				pow(math.sin(angle - AIM_ANGLE_BONUS_BEGIN), 2.0) *
+				max(delta_distance - ANGLE_BONUS_SCALE, 0.0)
+			)
+			result = 1.5 * pow(max(0.0, angle_bonus), 0.99) / max(AIM_TIMING_THRESHOLD, prev_strain_time)
+
+		weighted_distance = pow(delta_distance, 0.99)
+		res:float = max(
+			( result + weighted_distance / max(AIM_TIMING_THRESHOLD, strain_time) ),
+			( weighted_distance / strain_time )
+		)
+		return (res, False)
+
+	def deltaSpacingWeightSpeed(self, difftype:int, delta_distance:float, delta_time:float, prev_delta_distance:float, prev_delta_time:float, angle:float) -> tuple:
+
+		strain_time:float = max(delta_time, 50.0)
+
+		is_single:bool = delta_distance > SINGLE_SPACING
+		delta_distance = min(delta_distance, SINGLE_SPACING)
+		delta_time = max(delta_time, MAX_SPEED_BONUS)
+
+		speed_bonus:float = 1.0
+		if delta_time < MIN_SPEED_BONUS:
+			speed_bonus = ( (MIN_SPEED_BONUS - delta_time) / 40 ) ** 2
+
+		angle_bonus:float = 1.0
+		angle_bonus_part:float = 0.0
+		if angle != None and angle < SPEED_ANGLE_BONUS_BEGIN:
+			sin:float = math.sin( 1.5 * (SPEED_ANGLE_BONUS_BEGIN - angle) )
+			angle_bonus += (sin * sin / 3.57)
+			if delta_distance < ANGLE_BONUS_SCALE and angle < (math.pi / 4):
+				angle_bonus_part = (1 - angle_bonus)
+				angle_bonus_part *= min( (ANGLE_BONUS_SCALE - delta_distance) / 10, 1 )
+				angle_bonus += angle_bonus_part
+			elif delta_distance < ANGLE_BONUS_SCALE:
+				angle_bonus_part = (1 - angle_bonus)
+				angle_bonus_part *= min( (ANGLE_BONUS_SCALE - delta_distance) / 10, 1 )
+				angle_bonus_part *= math.sin((math.pi / 2.0 - angle) * 4.0 / math.pi)
+				angle_bonus += angle_bonus_part
+
+		res:float = (1 + (speed_bonus - 1) * 0.75)
+		res *= angle_bonus
+		res *= (0.95 + speed_bonus * pow(delta_distance / SINGLE_SPACING, 3.5))
+		res /= strain_time
+
+		return (res, is_single)

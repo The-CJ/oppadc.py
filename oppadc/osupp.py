@@ -35,7 +35,7 @@ class OsuPP(object):
 	def __repr__(self):
 		return f"<{self.__class__.__name__} total={round(self.total_pp,3)}pp (aim={round(self.aim_pp,2)} speed={round(self.speed_pp,2)} acc={round(self.acc_pp,2)}) [{round(self.accuracy,2)}%]>"
 
-	def calc(self, version:int=2, accuracy:float=100, combo:int=None, misses:int=0, n300:int=None, n100:int=None, n50:int=None) -> None:
+	def calc(self, version:int=1, accuracy:float=100, combo:int=None, misses:int=0, n300:int=None, n100:int=None, n50:int=None) -> None:
 		"""
 			calculates the total pp (by standard PPv2) with the called arguments
 			if its not given its always assumed to be the highest/best.
@@ -64,6 +64,7 @@ class OsuPP(object):
 		# re-calc accuracy
 		amount_hitobjects:int = len(self.Map.hitobjects)
 		amount_circle:int = self.Map.amount_circle
+
 		accuracy = self.getAccFromValues(n300, n100, n50, misses)
 		real_acc:float = accuracy
 

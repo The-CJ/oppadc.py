@@ -22,6 +22,7 @@ class OsuPP(object):
 
 		self.accuracy:float = 0.0
 		self.combo:int = 0
+		self.misses:int = 0
 
 		self.total_pp:float = 0.0
 		self.aim_pp:float = 0.0
@@ -52,7 +53,7 @@ class OsuPP(object):
 		# got no combo values, so we assume max combo
 		max_combo:int = self.Map.maxCombo()
 		if not combo or combo < 0:
-			combo = max_combo
+			combo = max_combo - misses
 
 		Stats:OsuStats = self.Map.getStats()
 		Difficulty:OsuDifficulty = self.Map.getDifficulty()
@@ -179,6 +180,7 @@ class OsuPP(object):
 		# set the vars we calculated with
 		self.accuracy = accuracy * 100
 		self.combo = combo
+		self.misses = misses
 
 	def getBasePP(self, stars:float) -> float:
 		return (((5 * max( 1, (stars / 0.0675) )) - 4) ** 3) / 100000

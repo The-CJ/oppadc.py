@@ -28,16 +28,18 @@ D:OsuDifficulty = Map.getDifficulty()
 S:OsuStats = Map.getStats()
 P:OsuPP = Map.getPP()
 
-print("#"*16)
+print("#"*32)
 print("--General--")
 print(f"{Map.artist} - {Map.title} [{Map.version}]")
 print(f"Mods: {OsuModIndex.getStringFromValue(D.mods_value)}")
 print(f"OD: {round(D.od,1)} AR: {round(D.ar,1)} CS: {round(D.cs,1)} HP: {round(D.hp,1)} ")
 print("--Stats--")
+print(f"Stars: {round(S.total,2)} (aim={round(S.aim,2)} speed={round(S.speed,2)})")
+print(f"Combo: {P.combo} / {Map.maxCombo()} ({P.misses} misses)")
 print(f"Acc: {round(P.accuracy,2)}% / 100%")
-print(f"Combo: {P.combo} / {Map.maxCombo()}")
 print("--PP--")
 print(f"{round(P.total_pp,2)}PP (speed={round(P.speed_pp,2)} aim={round(P.aim_pp,2)} acc={round(P.acc_pp,2)})")
+print("#"*32)
 
 
 

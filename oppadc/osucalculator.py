@@ -225,7 +225,7 @@ class OsuCalculator(object):
 			if difftype == DIFF_SPEED:
 				NowObject.is_single = is_single
 
-		NowObject.strains[difftype] = PrevObject.strains[difftype] * decay * value
+		NowObject.strains[difftype] = (PrevObject.strains[difftype] * decay) + value
 
 	def deltaSpacingWeight(self, *x) -> tuple:
 		# NOTE: everything happening in this part... is to high for me

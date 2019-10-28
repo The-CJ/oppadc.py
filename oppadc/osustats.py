@@ -190,6 +190,9 @@ class OsuStats(object):
 		# length of a strain interval in milliseconds
 		strain_step:float = 400.0 * Difficulty.speed_multiplier
 
+		# reset before 2nd, calc
+		self.strains = []
+
 		# first object doesn't generate a strain so we begin with
 		# an incremented interval end
 		interval_end:float = math.ceil(self.Map.hitobjects[0].starttime / strain_step) * strain_step

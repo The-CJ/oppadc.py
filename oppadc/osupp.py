@@ -132,7 +132,7 @@ class OsuPP(object):
 			self.aim_pp *= fl_bonus
 
 		# acc and od bonus
-		acc_bonus:float = 0.5 + (accuracy / 1)
+		acc_bonus:float = 0.5 + (accuracy / 2)
 		od_squared = Difficulty.od * Difficulty.od
 		od_bonus:float = 0.98 + (od_squared / 2500)
 

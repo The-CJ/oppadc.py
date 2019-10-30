@@ -7,9 +7,14 @@ All thanks go to @Francesco149
 I just rewrite it, because i was bored.
 Also i need a object based version so i can use it better in the PhaazeProject
 
+## Install
 
+There are multiple ways, here my "prefered" one:
+```
+py -m pip install git+https://github.com/The-CJ/oppadc.py.git#egg=oppadc
+```
 
-Example:
+## Example
 ```py
 import oppadc
 

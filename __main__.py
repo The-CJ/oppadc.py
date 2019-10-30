@@ -22,11 +22,10 @@ for arg in sys.argv:
 map_path_str:str = sys.argv[1]
 
 Map:OsuMap = OsuMap(file_path=map_path_str)
-Map.getPP(Mods=mods, accuracy=acc_percent, combo=combo, misses=misses)
 
+P:OsuPP = Map.getPP(Mods=mods, accuracy=acc_percent, combo=combo, misses=misses)
 D:OsuDifficulty = Map.getDifficulty()
 S:OsuStats = Map.getStats()
-P:OsuPP = Map.getPP()
 
 print("#"*32)
 print("--General--")

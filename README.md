@@ -15,7 +15,7 @@ import oppadc
 
 # there are 3 'main' info sources, all of them are bound to a map
 
-Map = oppadc.OsuMap(file_path="some_map.osu")
+Map = oppadc.OsuMap(file_path="path/to/map.osu")
 PP = MapInfo.getPP("HDHR", misses=5, combo=666)
 Stats = MapInfo.getStats()
 Diff = MapInfo.getDifficulty()

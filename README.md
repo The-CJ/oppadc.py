@@ -6,3 +6,31 @@ All thanks go to @Francesco149
 
 I just rewrite it, because i was bored.
 Also i need a object based version so i can use it better in the PhaazeProject
+
+
+
+Example:
+```py
+import oppadc
+
+# there are 3 'main' info sources, all of them are bound to a map
+
+Map = oppadc.OsuMap(file_path="some_map.osu")
+PP = MapInfo.getPP("HDHR", misses=5, combo=666)
+Stats = MapInfo.getStats()
+Diff = MapInfo.getDifficulty()
+
+print(f"{Map.artist} - {Map.title} [{Map.version}]")
+print(Diff)
+print(f"Acc: {round(PP.accuracy, 2)}%")
+print(f"Stars: {round(Stats.total, 2)} Stars")
+print(f"Gives: {round(PP.total_pp, 1)}pp")
+```
+
+```
+toby fox + RichaadEB - MEGALOVANIA ~Dual Mix~ [Excors]
+<OsuDifficulty ar=10.0 cs=5.2 od=13.44 hp=9.1 mods='HDHR'>
+Acc: 99.51%
+Stars: 9.69 Stars
+Gives: 1167.2pp
+```

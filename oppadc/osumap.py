@@ -330,12 +330,12 @@ class OsuMap(object):
 			# and we still have a next timingpoint
 			# then CurrentTimingPoint = NextTimingPoint
 			# and we try to get a next one, or set None to ignore loop
-			while Obj.starttime >= NextTimingPoint.starttime and NextTimingPoint != None:
+			while NextTimingPoint is not None and Obj.starttime >= NextTimingPoint.starttime:
 				timing_index += 1
 				CurrentTimingPoint = self.timingpoints[timing_index]
 
 				# is there a next?
-				if len(self.timingpoints) >= (timing_index + 1):
+				if len(self.timingpoints) > (timing_index + 1):
 					NextTimingPoint = self.timingpoints[timing_index + 1]
 				else:
 					NextTimingPoint = None

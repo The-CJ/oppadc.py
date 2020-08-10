@@ -105,6 +105,8 @@ class OsuDifficulty(object):
 			od_ms = min(OD0_MS, max(OD10_MS, od_ms))
 			od_ms /= self.speed_multiplier
 
+			self.od = (OD0_MS - od_ms) / OD_MS_STEP
+
 		if "CS" in calc:
 			if mods_value & OsuModIndex.index["HR"].value:
 				self.cs *= 1.3

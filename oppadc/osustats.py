@@ -321,7 +321,7 @@ class OsuStats(object):
 
 		speed_bonus:float = 1.0
 		if delta_time < MIN_SPEED_BONUS:
-			speed_bonus = ( (MIN_SPEED_BONUS - delta_time) / 40 ) ** 2
+			speed_bonus += ( (MIN_SPEED_BONUS - delta_time) / 40 ) ** 2
 
 		angle_bonus:float = 1.0
 		angle_bonus_part:float = 0.0

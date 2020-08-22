@@ -93,7 +93,7 @@ class OsuPP(object):
 		length_bonus:float = 0.95 + (0.4 * min(1, amount_objects_ober_2k))
 
 		if amount_hitobjects > 2000:
-			length_bonus += math.log10(amount_hitobjects) * 0.5
+			length_bonus += math.log10(amount_objects_ober_2k) * 0.5
 
 		miss_penality:float = 0.97 ** misses
 		combo_break:float = (combo**0.8) / (max_combo**0.8)

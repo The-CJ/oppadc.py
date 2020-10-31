@@ -20,12 +20,12 @@ import oppadc
 
 # there are 3 'main' info sources, all of them are bound to a map
 
-Map = oppadc.OsuMap(file_path="path/to/map.osu")
+MapInfo = oppadc.OsuMap(file_path="path/to/map.osu")
 PP = MapInfo.getPP("HDHR", misses=5, combo=666)
 Stats = MapInfo.getStats()
 Diff = MapInfo.getDifficulty()
 
-print(f"{Map.artist} - {Map.title} [{Map.version}]")
+print(f"{MapInfo.artist} - {MapInfo.title} [{MapInfo.version}]")
 print(Diff)
 print(f"Acc: {round(PP.accuracy, 2)}%")
 print(f"Stars: {round(Stats.total, 2)} Stars")

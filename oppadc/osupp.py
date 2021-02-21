@@ -95,13 +95,14 @@ class OsuPP(object):
 		if amount_hitobjects > 2000:
 			length_bonus += math.log10(amount_objects_ober_2k) * 0.5
 
-		miss_penality:float = 0.97 ** misses
+		miss_penality_aim:float = 0.97 * pow(1 - pow(misses / amount_hitobjects, 0.775), misses)
+		miss_penality_speed:float = 0.97 * pow(1 - pow(misses / amount_hitobjects, 0.775), pow(misses, 0.875))
 		combo_break:float = (combo**0.8) / (max_combo**0.8)
 
 		# ar bonus
-		ar_bonus:float = 1.0
+		ar_bonus:float = 0.0
 		if Difficulty.ar > 10.33:
-			ar_bonus += 0.3 * (Difficulty.ar - 10.33)
+			ar_bonus += 0.4 * (Difficulty.ar - 10.33)
 
 		elif Difficulty.ar < 8.0:
 			ar_bonus += 0.1 * (8.0 - Difficulty.ar)
@@ -109,9 +110,10 @@ class OsuPP(object):
 		# aim pp - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		self.aim_pp = self.getBasePP(Stats.aim)
 		self.aim_pp *= length_bonus
-		self.aim_pp *= miss_penality
+		if misses > 0:
+			self.aim_pp *= miss_penality_aim
 		self.aim_pp *= combo_break
-		self.aim_pp *= ar_bonus
+		self.aim_pp *= (1 + min(ar_bonus, ar_bonus * (amount_hitobjects / 1000)))
 
 		# hd bonus
 		hd_bonus:float = 1.0
@@ -142,19 +144,22 @@ class OsuPP(object):
 		# speed pp - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		self.speed_pp = self.getBasePP(Stats.speed)
 		self.speed_pp *= length_bonus
-		self.speed_pp *= miss_penality
+		if misses > 0:
+			self.speed_pp *= miss_penality_speed
 		self.speed_pp *= combo_break
 
 		# high ar bonus
 		if Difficulty.ar > 10.33:
-			self.speed_pp *= ar_bonus
+			self.speed_pp *= 1 + min(ar_bonus, ar_bonus * (amount_hitobjects / 1000))
 
 		# hd bonus
 		self.speed_pp *= hd_bonus
 
 		# more stuff added
-		self.speed_pp *= (0.02 + accuracy)
-		self.speed_pp *= (0.96 + (od_squared / 1600))
+		self.speed_pp *= (0.95 + od_squared / 750)
+		self.speed_pp *= accuracy ** ((14.5 - max(Difficulty.od, 8)) / 2)
+		if n50 >= amount_hitobjects / 500:
+			self.speed_pp *= 0.98 ** (n50 - amount_hitobjects / 500)
 
 		# acc pp - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		self.acc_pp = (1.52163 ** Difficulty.od) * (real_acc ** 24) * 2.83
@@ -172,10 +177,10 @@ class OsuPP(object):
 		final_multiplier:float = 1.12
 
 		if Difficulty.mods_value & MOD_NF:
-			final_multiplier *= 0.9
+			final_multiplier *= max(0.9, 1 - 0.2 * misses)
 
 		if Difficulty.mods_value & MOD_SO:
-			final_multiplier *= 0.95
+			final_multiplier *= 1 - (self.Map.amount_spinner / amount_hitobjects) ** 0.85
 
 		self.total_pp = (( (self.aim_pp**1.1) + (self.speed_pp**1.1) + (self.acc_pp**1.1) ) ** (1.0/1.1)) * final_multiplier
 		# set the vars we calculated with
